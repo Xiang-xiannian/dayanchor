@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 import com.dayanchor.dayanchor.entity.Task;
 import com.dayanchor.dayanchor.entity.TaskStatus;
 import com.dayanchor.dayanchor.entity.EnergyLevel;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TaskService {
@@ -49,6 +51,23 @@ public class TaskService {
         task.setUserId(userId);
         task.setStatus(TaskStatus.PENDING);
         task.setCreatedAt(LocalDateTime.now());
+        return taskRepository.save(task);
+    }
+
+    public List<Task> getActiveTasks(Long userId) {
+        return taskRepository.findByUserIdAndStatus(
+                userId,
+                TaskStatus.PENDING
+        );
+    }
+
+    @Transactional
+    public Task completeTask(Long taskId) {
+        Task task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        task.setStatus(TaskStatus.COMPLETED);
+
         return taskRepository.save(task);
     }
 }

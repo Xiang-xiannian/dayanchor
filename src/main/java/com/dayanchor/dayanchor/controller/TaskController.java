@@ -3,10 +3,9 @@ package com.dayanchor.dayanchor.controller;
 import com.dayanchor.dayanchor.dto.CreateTaskRequest;
 import com.dayanchor.dayanchor.entity.Task;
 import com.dayanchor.dayanchor.service.TaskService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/tasks")
@@ -27,5 +26,15 @@ public class TaskController {
                 request.getEnergyLevel(),
                 request.getUserId()
         );
+    }
+
+    @GetMapping
+    public List<Task> getTasks(@RequestParam Long userId) {
+        return taskService.getActiveTasks(userId);
+    }
+
+    @PatchMapping("/{id}/complete")
+    public Task completeTask(@PathVariable Long id) {
+        return taskService.completeTask(id);
     }
 }
