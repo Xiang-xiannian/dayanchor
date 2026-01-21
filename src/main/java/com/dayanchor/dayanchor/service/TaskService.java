@@ -1,5 +1,6 @@
 package com.dayanchor.dayanchor.service;
 
+import com.dayanchor.dayanchor.dto.UpdateTaskRequest;
 import com.dayanchor.dayanchor.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import com.dayanchor.dayanchor.entity.Task;
@@ -70,4 +71,34 @@ public class TaskService {
 
         return taskRepository.save(task);
     }
+
+    @Transactional
+    public void deleteTask(Long taskId) {
+        if (!taskRepository.existsById(taskId)) {
+            throw new RuntimeException("Task not found");
+        }
+
+        taskRepository.deleteById(taskId);
+    }
+
+    public Task updateTask(Long id, UpdateTaskRequest request){
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Task not found"));
+
+        if (request.getTitle() != null) {
+            task.setTitle(request.getTitle());
+        }
+
+        if (request.getEnergyLevel() != null) {
+            task.setEnergyLevel(request.getEnergyLevel());
+        }
+
+        if (request.getDescription() != null) {
+            task.setDescription(request.getDescription());
+        }
+
+        return taskRepository.save(task);
+
+    }
+
 }

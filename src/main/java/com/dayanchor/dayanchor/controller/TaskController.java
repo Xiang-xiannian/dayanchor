@@ -1,6 +1,7 @@
 package com.dayanchor.dayanchor.controller;
 
 import com.dayanchor.dayanchor.dto.CreateTaskRequest;
+import com.dayanchor.dayanchor.dto.UpdateTaskRequest;
 import com.dayanchor.dayanchor.entity.Task;
 import com.dayanchor.dayanchor.service.TaskService;
 import org.springframework.web.bind.annotation.*;
@@ -36,5 +37,18 @@ public class TaskController {
     @PatchMapping("/{id}/complete")
     public Task completeTask(@PathVariable Long id) {
         return taskService.completeTask(id);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTask(@PathVariable Long id) {
+        taskService.deleteTask(id);
+    }
+
+    @PatchMapping("/{id}")
+    public Task updateTask(
+            @PathVariable Long id,
+            @RequestBody UpdateTaskRequest request
+    ) {
+        return taskService.updateTask(id, request);
     }
 }
