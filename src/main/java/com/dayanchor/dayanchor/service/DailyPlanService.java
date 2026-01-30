@@ -6,10 +6,12 @@ import com.dayanchor.dayanchor.entity.TaskStatus;
 import com.dayanchor.dayanchor.repository.DailyTaskLogRepository;
 import com.dayanchor.dayanchor.repository.TaskRepository;
 import org.springframework.stereotype.Service;
+import com.dayanchor.dayanchor.dto.DailyPlanResponse;
 
 import java.time.LocalDate;
 import java.util.List;
 
+/** Daily plan service. 每日计划服务 */
 @Service
 public class DailyPlanService {
 
@@ -21,36 +23,18 @@ public class DailyPlanService {
         this.taskRepository = taskRepository;
     }
 
+    /** Get daily plan. 获取每日计划 */
     public DailyPlanResponse getDailyPlan(Long userId, LocalDate date) {
         List<DailyTaskLog> dailyLogs = logRepository.findByUserIdAndTaskDate(userId, date);
         List<Task> pendingTasks = taskRepository.findByUserIdAndStatus(userId, TaskStatus.PENDING);
-
         return new DailyPlanResponse(dailyLogs, pendingTasks);
     }
 
-    public static class DailyPlanResponse {
-        private List<DailyTaskLog> dailyLogs;
-        private List<Task> pendingTasks;
-
-        public DailyPlanResponse(List<DailyTaskLog> dailyLogs, List<Task> pendingTasks) {
-            this.dailyLogs = dailyLogs;
-            this.pendingTasks = pendingTasks;
-        }
-
-        public List<DailyTaskLog> getDailyLogs() {
-            return dailyLogs;
-        }
-
-        public void setDailyLogs(List<DailyTaskLog> dailyLogs) {
-            this.dailyLogs = dailyLogs;
-        }
-
-        public List<Task> getPendingTasks() {
-            return pendingTasks;
-        }
-
-        public void setPendingTasks(List<Task> pendingTasks) {
-            this.pendingTasks = pendingTasks;
-        }
+    /** Get completed count for the day. 获取当天已完成数量（日志+任务） */
+    public long getCompletedCount(Long userId, LocalDate date) {
+        long completedLogs = logRepository.countByUserIdAndTaskDateAndStatus(userId, date, TaskStatus.COMPLETED);
+        long completedTasks = taskRepository.countByUserIdAndTaskDateAndStatus(userId, date, TaskStatus.COMPLETED);
+        return completedLogs + completedTasks;
     }
+
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** DailyTaskTemplate service. 每日模板服务 */
 @Service
 public class DailyTaskTemplateService {
     private final DailyTaskTemplateRepository templateRepository;
@@ -17,6 +18,7 @@ public class DailyTaskTemplateService {
         this.templateRepository = templateRepository;
     }
 
+    /** Create template. 创建模板 */
     public DailyTaskTemplate createTemplate(
             Long userId,
             String title,
@@ -46,10 +48,12 @@ public class DailyTaskTemplateService {
         return templateRepository.save(template);
     }
 
+    /** List active templates. 查询启用模板 */
     public List<DailyTaskTemplate> getActiveTemplates(Long userId) {
         return templateRepository.findByUserIdAndActiveTrue(userId);
     }
 
+    /** Update template. 更新模板 */
     public DailyTaskTemplate updateTemplate(Long id, UpdateDailyTaskTemplateRequest request) {
         DailyTaskTemplate template = templateRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Template not found"));
@@ -73,6 +77,7 @@ public class DailyTaskTemplateService {
         return templateRepository.save(template);
     }
 
+    /** Delete template. 删除模板 */
     public void deleteTemplate(Long id) {
         if (!templateRepository.existsById(id)) {
             throw new RuntimeException("Template not found");
@@ -81,3 +86,4 @@ public class DailyTaskTemplateService {
         templateRepository.deleteById(id);
     }
 }
+

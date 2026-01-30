@@ -1,17 +1,18 @@
 package com.dayanchor.dayanchor.service;
 
 import com.dayanchor.dayanchor.dto.UpdateTaskRequest;
-import com.dayanchor.dayanchor.repository.TaskRepository;
-import org.springframework.stereotype.Service;
+import com.dayanchor.dayanchor.entity.EnergyLevel;
 import com.dayanchor.dayanchor.entity.Task;
 import com.dayanchor.dayanchor.entity.TaskStatus;
-import com.dayanchor.dayanchor.entity.EnergyLevel;
+import com.dayanchor.dayanchor.repository.TaskRepository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+/** Task service. 任务服务 */
 @Service
 public class TaskService {
 
@@ -21,6 +22,7 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
+    /** Create task. 创建任务 */
     public Task createTask(
             String title,
             String description,
@@ -55,6 +57,7 @@ public class TaskService {
         return taskRepository.save(task);
     }
 
+    /** List pending tasks. 查询待办任务 */
     public List<Task> getActiveTasks(Long userId) {
         return taskRepository.findByUserIdAndStatus(
                 userId,
@@ -62,16 +65,17 @@ public class TaskService {
         );
     }
 
+    /** Complete task. 完成任务 */
     @Transactional
     public Task completeTask(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
         task.setStatus(TaskStatus.COMPLETED);
-
         return taskRepository.save(task);
     }
 
+    /** Delete task. 删除任务 */
     @Transactional
     public void deleteTask(Long taskId) {
         if (!taskRepository.existsById(taskId)) {
@@ -81,7 +85,8 @@ public class TaskService {
         taskRepository.deleteById(taskId);
     }
 
-    public Task updateTask(Long id, UpdateTaskRequest request){
+    /** Update task. 更新任务 */
+    public Task updateTask(Long id, UpdateTaskRequest request) {
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Task not found"));
 
@@ -98,7 +103,6 @@ public class TaskService {
         }
 
         return taskRepository.save(task);
-
     }
-
 }
+
