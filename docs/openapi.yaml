@@ -1,0 +1,774 @@
+openapi: 3.0.3
+info:
+  title: DayAnchor API
+  version: 0.1.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /hello:
+    get:
+      tags: [Hello]
+      summary: Hello
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /bye:
+    get:
+      tags: [Hello]
+      summary: Goodbye
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+  /greet:
+    get:
+      tags: [Hello]
+      summary: Greet by name
+      parameters:
+        - in: query
+          name: name
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /api/tasks:
+    post:
+      tags: [Tasks]
+      summary: Create task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTaskRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags: [Tasks]
+      summary: List pending tasks
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+  /api/tasks/{id}/complete:
+    patch:
+      tags: [Tasks]
+      summary: Complete task
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+  /api/tasks/{id}:
+    patch:
+      tags: [Tasks]
+      summary: Update task
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTaskRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    delete:
+      tags: [Tasks]
+      summary: Delete task
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+
+  /api/daily-templates:
+    post:
+      tags: [DailyTemplates]
+      summary: Create daily template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDailyTaskTemplateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyTaskTemplate'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags: [DailyTemplates]
+      summary: List active templates
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyTaskTemplate'
+  /api/daily-templates/{id}:
+    patch:
+      tags: [DailyTemplates]
+      summary: Update daily template
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateDailyTaskTemplateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyTaskTemplate'
+    delete:
+      tags: [DailyTemplates]
+      summary: Delete daily template
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+
+  /api/daily-task-logs:
+    get:
+      tags: [DailyTaskLogs]
+      summary: Get daily logs by date
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DailyTaskLog'
+  /api/daily-task-logs/{id}/complete:
+    patch:
+      tags: [DailyTaskLogs]
+      summary: Complete daily log
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyTaskLog'
+
+  /api/daily-plan:
+    get:
+      tags: [DailyPlan]
+      summary: Get daily plan
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DailyPlanResponse'
+  /api/daily-plan/completed-count:
+    get:
+      tags: [DailyPlan]
+      summary: Get completed count for date
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: integer
+                format: int64
+
+  /api/reward-items:
+    post:
+      tags: [RewardItems]
+      summary: Create reward item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRewardItemRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewardItem'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags: [RewardItems]
+      summary: List reward items
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RewardItem'
+  /api/reward-items/{id}:
+    patch:
+      tags: [RewardItems]
+      summary: Update reward item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRewardItemRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RewardItem'
+    delete:
+      tags: [RewardItems]
+      summary: Delete reward item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '204':
+          description: No Content
+
+  /api/chest/rule:
+    put:
+      tags: [Chest]
+      summary: Set chest rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetChestRuleRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChestRule'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /api/chest/open:
+    post:
+      tags: [Chest]
+      summary: Open chest
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: date
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpenChestResponse'
+
+  /api/work-timer/today:
+    get:
+      tags: [WorkTimer]
+      summary: Get today timer status
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkTimerStatusResponse'
+  /api/work-timer/today/start:
+    post:
+      tags: [WorkTimer]
+      summary: Start today timer
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkTimerStatusResponse'
+  /api/work-timer/today/pause:
+    post:
+      tags: [WorkTimer]
+      summary: Pause today timer
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkTimerStatusResponse'
+  /api/work-timer/by-date:
+    get:
+      tags: [WorkTimer]
+      summary: Get timer by date
+      parameters:
+        - in: query
+          name: userId
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkTimerStatusResponse'
+
+components:
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        message:
+          type: string
+
+    EnergyLevel:
+      type: string
+      enum: [HIGH, LOW]
+    TaskStatus:
+      type: string
+      enum: [PENDING, COMPLETED]
+
+    CreateTaskRequest:
+      type: object
+      required: [title, taskDate, energyLevel, userId]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        taskDate:
+          type: string
+          format: date
+        energyLevel:
+          $ref: '#/components/schemas/EnergyLevel'
+        userId:
+          type: integer
+          format: int64
+
+    UpdateTaskRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        energyLevel:
+          $ref: '#/components/schemas/EnergyLevel'
+        description:
+          type: string
+          nullable: true
+
+    Task:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        taskDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        energyLevel:
+          $ref: '#/components/schemas/EnergyLevel'
+        userId:
+          type: integer
+          format: int64
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateDailyTaskTemplateRequest:
+      type: object
+      required: [userId, title, energyLevel, active]
+      properties:
+        userId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        energyLevel:
+          $ref: '#/components/schemas/EnergyLevel'
+        active:
+          type: boolean
+
+    UpdateDailyTaskTemplateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        description:
+          type: string
+          nullable: true
+        energyLevel:
+          $ref: '#/components/schemas/EnergyLevel'
+        active:
+          type: boolean
+          nullable: true
+
+    DailyTaskTemplate:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        energyLevel:
+          $ref: '#/components/schemas/EnergyLevel'
+
+    DailyTaskLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        template:
+          $ref: '#/components/schemas/DailyTaskTemplate'
+        taskDate:
+          type: string
+          format: date
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        createdAt:
+          type: string
+          format: date-time
+
+    DailyPlanResponse:
+      type: object
+      properties:
+        dailyLogs:
+          type: array
+          items:
+            $ref: '#/components/schemas/DailyTaskLog'
+        pendingTasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+
+    CreateRewardItemRequest:
+      type: object
+      required: [userId, title]
+      properties:
+        userId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        enabled:
+          type: boolean
+          nullable: true
+
+    UpdateRewardItemRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          nullable: true
+        enabled:
+          type: boolean
+          nullable: true
+
+    RewardItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        title:
+          type: string
+        enabled:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+
+    SetChestRuleRequest:
+      type: object
+      required: [userId, requiredCompletedCount]
+      properties:
+        userId:
+          type: integer
+          format: int64
+        requiredCompletedCount:
+          type: integer
+
+    ChestRule:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        requiredCompletedCount:
+          type: integer
+        updatedAt:
+          type: string
+          format: date-time
+
+    OpenChestResponse:
+      type: object
+      properties:
+        opened:
+          type: boolean
+        message:
+          type: string
+        reward:
+          $ref: '#/components/schemas/RewardItem'
+        completedCount:
+          type: integer
+          format: int64
+        requiredCount:
+          type: integer
+
+    WorkTimerStatusResponse:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        totalSeconds:
+          type: integer
+          format: int64
+        running:
+          type: boolean
+        runningStartAt:
+          type: string
+          format: date-time
+          nullable: true
